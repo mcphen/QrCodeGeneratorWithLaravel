@@ -26,19 +26,19 @@ export default defineComponent({
     const error = ref<string>('')
     const qrCodeService = new QRCodeService()
 
-    onMounted(() => {
+    onMounted(async () => {
       try {
-        const url = qrCodeService.incrementScanCountAndGetUrl(props.id)
+        const url = await qrCodeService.incrementScanCountAndGetUrl(props.id)
         if (url) {
           // Redirect to the original URL after a short delay to display the loading indicator
           setTimeout(() => {
             window.location.href = url
           }, 1000)
         } else {
-          error.value = 'QR code not found or URL is invalid.'
+          error.value = 'QR code non trouvé ou URL invalide.'
         }
       } catch (err) {
-        error.value = 'An error occurred during redirect.'
+        error.value = 'Une erreur est survenue pendant la redirection.'
         console.error(err)
       }
     })

@@ -82,7 +82,8 @@ export default defineComponent({
       qrCodes,
       loading,
       error,
-      onQRGenerated
+      onQRGenerated,
+      loadQRCodes
     }
   }
 })
