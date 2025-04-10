@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "axios": "^1.8.4",
     "qrcode.vue": "^3.6.0",
     "typescript": "^5.8.3",
     "vite": "^6.2.5",

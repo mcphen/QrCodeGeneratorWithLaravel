@@ -20,7 +20,16 @@
             <h4 class="mb-0">Your QR Codes</h4>
           </div>
           <div class="card-body">
-            <QRCodeList :qrCodes="qrCodes" />
+            <div v-if="loading" class="text-center p-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2">Chargement des QR codes...</p>
+            </div>
+            <div v-else-if="error" class="alert alert-danger">
+              {{ error }}
+            </div>
+            <QRCodeList v-else :qrCodes="qrCodes" @deleted="loadQRCodes" />
           </div>
         </div>
       </div>
@@ -43,22 +52,36 @@ export default defineComponent({
   },
   setup() {
     const qrCodes = ref<QRCode[]>([])
+    const loading = ref<boolean>(false)
+    const error = ref<string>('')
     const qrCodeService = new QRCodeService()
 
-    onMounted(() => {
-      loadQRCodes()
+    onMounted(async () => {
+      await loadQRCodes()
     })
 
-    const loadQRCodes = () => {
-      qrCodes.value = qrCodeService.getAllQRCodes()
+    const loadQRCodes = async () => {
+      loading.value = true
+      error.value = ''
+      
+      try {
+        qrCodes.value = await qrCodeService.getAllQRCodes()
+      } catch (err) {
+        console.error('Error loading QR codes:', err)
+        error.value = 'Erreur lors du chargement des QR codes.'
+      } finally {
+        loading.value = false
+      }
     }
 
-    const onQRGenerated = (qrCode: QRCode) => {
-      loadQRCodes() // Reload the list after a new QR code is generated
+    const onQRGenerated = async (qrCode: QRCode) => {
+      await loadQRCodes() // Reload the list after a new QR code is generated
     }
 
     return {
       qrCodes,
+      loading,
+      error,
       onQRGenerated
     }
   }

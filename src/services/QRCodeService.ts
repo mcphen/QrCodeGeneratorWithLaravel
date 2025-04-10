@@ -1,100 +1,80 @@
 import { QRCode } from '@/models/QRCode'
+import { ApiService } from '@/api/ApiService'
 
 export class QRCodeService {
-  private readonly storageKey: string = 'qr_codes'
   private readonly baseUrl: string = window.location.origin
 
   /**
    * Creates a new QR code for the given URL
    */
-  createQRCode(url: string): QRCode {
-    const qrCodes = this.getAllQRCodes()
-    
-    // Generate a unique ID
-    const id = this.generateUniqueId()
-    
-    // Create the QR code object
-    const newQRCode: QRCode = {
-      id,
-      originalUrl: url,
-      redirectUrl: `${this.baseUrl}/scan/${id}`,
-      createdAt: Date.now(),
-      scanCount: 0
+  async createQRCode(url: string): Promise<QRCode | null> {
+    try {
+      const newQRCode = await ApiService.createQRCode(url);
+      return newQRCode;
+    } catch (error) {
+      console.error('Error creating QR code:', error);
+      return null;
     }
-    
-    // Save to localStorage
-    this.saveQRCodes([...qrCodes, newQRCode])
-    
-    return newQRCode
   }
 
   /**
-   * Gets all QR codes from localStorage
+   * Gets all QR codes from the API
    */
-  getAllQRCodes(): QRCode[] {
-    const storedQRCodes = localStorage.getItem(this.storageKey)
-    return storedQRCodes ? JSON.parse(storedQRCodes) : []
+  async getAllQRCodes(): Promise<QRCode[]> {
+    try {
+      return await ApiService.getAllQRCodes();
+    } catch (error) {
+      console.error('Error getting all QR codes:', error);
+      return [];
+    }
   }
 
   /**
    * Gets a single QR code by ID
    */
-  getQRCodeById(id: string): QRCode | undefined {
-    const qrCodes = this.getAllQRCodes()
-    return qrCodes.find(qrCode => qrCode.id === id)
+  async getQRCodeById(id: string): Promise<QRCode | null> {
+    try {
+      return await ApiService.getQRCodeById(id);
+    } catch (error) {
+      console.error(`Error getting QR code ${id}:`, error);
+      return null;
+    }
   }
 
   /**
    * Updates a QR code
    */
-  updateQRCode(updatedQRCode: QRCode): void {
-    const qrCodes = this.getAllQRCodes()
-    const index = qrCodes.findIndex(qrCode => qrCode.id === updatedQRCode.id)
-    
-    if (index !== -1) {
-      qrCodes[index] = updatedQRCode
-      this.saveQRCodes(qrCodes)
+  async updateQRCode(updatedQRCode: QRCode): Promise<QRCode | null> {
+    try {
+      return await ApiService.updateQRCode(updatedQRCode);
+    } catch (error) {
+      console.error(`Error updating QR code ${updatedQRCode.id}:`, error);
+      return null;
     }
   }
 
   /**
    * Deletes a QR code by ID
    */
-  deleteQRCode(id: string): void {
-    const qrCodes = this.getAllQRCodes()
-    const filteredQRCodes = qrCodes.filter(qrCode => qrCode.id !== id)
-    this.saveQRCodes(filteredQRCodes)
+  async deleteQRCode(id: string): Promise<boolean> {
+    try {
+      return await ApiService.deleteQRCode(id);
+    } catch (error) {
+      console.error(`Error deleting QR code ${id}:`, error);
+      return false;
+    }
   }
 
   /**
    * Increments the scan count for a QR code and returns the original URL
    */
-  incrementScanCountAndGetUrl(id: string): string {
-    const qrCode = this.getQRCodeById(id)
-    
-    if (qrCode) {
-      qrCode.scanCount += 1
-      this.updateQRCode(qrCode)
-      return qrCode.originalUrl
+  async incrementScanCountAndGetUrl(id: string): Promise<string> {
+    try {
+      const url = await ApiService.incrementScanAndGetUrl(id);
+      return url || '';
+    } catch (error) {
+      console.error(`Error incrementing scan count for QR code ${id}:`, error);
+      return '';
     }
-    
-    return ''
-  }
-
-  /**
-   * Saves the QR codes to localStorage
-   */
-  private saveQRCodes(qrCodes: QRCode[]): void {
-    localStorage.setItem(this.storageKey, JSON.stringify(qrCodes))
-  }
-
-  /**
-   * Generates a unique ID for a QR code
-   */
-  private generateUniqueId(): string {
-    // Generate a random string and append timestamp to ensure uniqueness
-    return Math.random().toString(36).substring(2, 15) + 
-           Math.random().toString(36).substring(2, 15) + 
-           Date.now().toString(36)
   }
 }

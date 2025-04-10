@@ -83,13 +83,17 @@ export default defineComponent({
 
       isGenerating.value = true
       try {
-        const newQRCode = qrCodeService.createQRCode(url.value)
-        generatedQRCode.value = newQRCode
-        emit('qr-generated', newQRCode)
-        url.value = '' // Reset the input field
+        const newQRCode = await qrCodeService.createQRCode(url.value)
+        if (newQRCode) {
+          generatedQRCode.value = newQRCode
+          emit('qr-generated', newQRCode)
+          url.value = '' // Reset the input field
+        } else {
+          throw new Error('Erreur lors de la création du QR code')
+        }
       } catch (error) {
         console.error('Error generating QR code:', error)
-        // You could add error handling UI here
+        alert('Erreur lors de la génération du QR code. Veuillez réessayer.')
       } finally {
         isGenerating.value = false
       }

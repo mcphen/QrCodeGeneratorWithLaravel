@@ -86,7 +86,8 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  emits: ['deleted'],
+  setup(props, { emit }) {
     const qrCodeService = new QRCodeService()
 
     const sortedQRCodes = computed(() => {
@@ -107,11 +108,20 @@ export default defineComponent({
         })
     }
 
-    const deleteQRCode = (id: string): void => {
-      if (confirm('Are you sure you want to delete this QR code?')) {
-        qrCodeService.deleteQRCode(id)
-        // Force a page reload to update the list
-        window.location.reload()
+    const deleteQRCode = async (id: string): Promise<void> => {
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce QR code ?')) {
+        try {
+          const success = await qrCodeService.deleteQRCode(id)
+          if (success) {
+            // Émettre un événement pour informer le parent de la suppression
+            emit('deleted')
+          } else {
+            alert('Erreur lors de la suppression du QR code')
+          }
+        } catch (error) {
+          console.error(`Erreur lors de la suppression du QR code ${id}:`, error)
+          alert('Une erreur s\'est produite lors de la suppression du QR code')
+        }
       }
     }
 
