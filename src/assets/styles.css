@@ -1,0 +1,49 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Fade-in animation for QR codes */
+.qr-code-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Override Bootstrap primary color */
+.btn-primary, .bg-primary {
+  background-color: #3f51b5 !important;
+  border-color: #3f51b5 !important;
+}
+
+.btn-outline-primary {
+  color: #3f51b5 !important;
+  border-color: #3f51b5 !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: #3f51b5 !important;
+  color: white !important;
+}
+
+.text-primary, .badge.bg-primary {
+  background-color: #3f51b5 !important;
+}
+
+/* QR code hover effect */
+.qr-thumbnail {
+  transition: transform 0.2s ease-in-out;
+}
+
+.qr-thumbnail:hover {
+  transform: scale(1.1);
+}
