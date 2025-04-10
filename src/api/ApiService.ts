@@ -5,13 +5,33 @@ import { QRCode } from '@/models/QRCode';
 const API_BASE_URL = 'http://localhost:8000/api';
 
 // Créer une instance d'Axios préconfigurée pour l'API Laravel
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
+
+// Ajouter le token d'authentification s'il existe
+const token = localStorage.getItem('qr_generator_token');
+if (token) {
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+// Intercepteur pour gérer les erreurs d'authentification
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response && error.response.status === 401) {
+      // Token expiré ou invalide, rediriger vers la page de connexion
+      localStorage.removeItem('qr_generator_token');
+      localStorage.removeItem('qr_generator_user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export class ApiService {
   /**

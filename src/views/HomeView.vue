@@ -4,9 +4,9 @@
     
     <div class="row">
       <div class="col-md-6 mb-4">
-        <div class="card">
+        <div class="card shadow">
           <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Create New QR Code</h4>
+            <h4 class="mb-0"><i class="fas fa-qrcode me-2"></i>Créer un QR Code</h4>
           </div>
           <div class="card-body">
             <QRCodeGenerator @qr-generated="onQRGenerated" />
@@ -15,9 +15,9 @@
       </div>
       
       <div class="col-md-6">
-        <div class="card">
+        <div class="card shadow">
           <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Your QR Codes</h4>
+            <h4 class="mb-0"><i class="fas fa-list me-2"></i>Vos QR Codes</h4>
           </div>
           <div class="card-body">
             <div v-if="loading" class="text-center p-4">
@@ -43,6 +43,8 @@ import QRCodeGenerator from '@/components/QRCodeGenerator.vue'
 import QRCodeList from '@/components/QRCodeList.vue'
 import { QRCode } from '@/models/QRCode'
 import { QRCodeService } from '@/services/QRCodeService'
+import { AuthService } from '@/services/AuthService'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'HomeView',
@@ -55,8 +57,16 @@ export default defineComponent({
     const loading = ref<boolean>(false)
     const error = ref<string>('')
     const qrCodeService = new QRCodeService()
+    const authService = new AuthService()
+    const router = useRouter()
 
     onMounted(async () => {
+      // Vérifier si l'utilisateur est authentifié
+      if (!authService.isAuthenticated()) {
+        router.push('/login')
+        return
+      }
+      
       await loadQRCodes()
     })
 
@@ -66,16 +76,22 @@ export default defineComponent({
       
       try {
         qrCodes.value = await qrCodeService.getAllQRCodes()
-      } catch (err) {
-        console.error('Error loading QR codes:', err)
-        error.value = 'Erreur lors du chargement des QR codes.'
+      } catch (err: any) {
+        console.error('Erreur lors du chargement des QR codes:', err)
+        
+        // Si l'erreur est liée à l'authentification, rediriger vers la page de connexion
+        if (err.response && err.response.status === 401) {
+          router.push('/login')
+        } else {
+          error.value = 'Erreur lors du chargement des QR codes.'
+        }
       } finally {
         loading.value = false
       }
     }
 
     const onQRGenerated = async () => {
-      await loadQRCodes() // Reload the list after a new QR code is generated
+      await loadQRCodes() // Recharger la liste après la génération d'un nouveau QR code
     }
 
     return {
