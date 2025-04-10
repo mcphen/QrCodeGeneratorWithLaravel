@@ -21,22 +21,26 @@ body {
 
 /* Override Bootstrap primary color */
 .btn-primary, .bg-primary {
-  background-color: #3f51b5 !important;
-  border-color: #3f51b5 !important;
+  background-color: #1a499b !important;
+  border-color: #1a499b !important;
 }
 
 .btn-outline-primary {
-  color: #3f51b5 !important;
-  border-color: #3f51b5 !important;
+  color: #1a499b !important;
+  border-color: #1a499b !important;
 }
 
 .btn-outline-primary:hover {
-  background-color: #3f51b5 !important;
+  background-color: #1a499b !important;
   color: white !important;
 }
 
-.text-primary, .badge.bg-primary {
-  background-color: #3f51b5 !important;
+.badge.bg-primary {
+  background-color: #1a499b !important;
+}
+
+.text-primary {
+  color: #1a499b !important;
 }
 
 /* QR code hover effect */
