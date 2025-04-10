@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { QRCode } from '@/models/QRCode';
 
-// URL de base de l'API Laravel (à configurer dans .env)
-const API_BASE_URL = 'http://localhost:8000/api';
+// URL de base de l'API Laravel depuis les variables d'environnement
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+// Afficher l'URL de l'API pour le débogage (à supprimer en production)
+console.log('API URL:', API_BASE_URL);
 
 // Créer une instance d'Axios préconfigurée pour l'API Laravel
 export const api = axios.create({
