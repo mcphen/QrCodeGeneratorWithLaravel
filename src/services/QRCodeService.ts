@@ -2,7 +2,6 @@ import { QRCode } from '@/models/QRCode'
 import { ApiService } from '@/api/ApiService'
 
 export class QRCodeService {
-  private readonly baseUrl: string = window.location.origin
 
   /**
    * Creates a new QR code for the given URL

@@ -62,7 +62,7 @@ export default defineComponent({
     QrcodeVue
   },
   emits: ['qr-generated'],
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const url = ref('')
     const isGenerating = ref(false)
     const generatedQRCode = ref<QRCode | null>(null)

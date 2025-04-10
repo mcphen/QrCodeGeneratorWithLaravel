@@ -74,7 +74,7 @@ export default defineComponent({
       }
     }
 
-    const onQRGenerated = async (qrCode: QRCode) => {
+    const onQRGenerated = async () => {
       await loadQRCodes() // Reload the list after a new QR code is generated
     }
 

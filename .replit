@@ -15,6 +15,10 @@ author = "agent"
 task = "workflow.run"
 args = "QR Code Generator App"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "QR Code Generator Build"
+
 [[workflows.workflow]]
 name = "QR Code Generator App"
 author = "agent"
@@ -30,9 +34,27 @@ task = "shell.exec"
 args = "npx vite --port 5000 --host 0.0.0.0"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "QR Code Generator Build"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx vue-tsc --noEmit && npx vite build"
+
 [deployment]
 run = ["sh", "-c", "npm install && npm install qrcode.vue && npm run dev -- --port 5000"]
 
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 5173
+externalPort = 5173
